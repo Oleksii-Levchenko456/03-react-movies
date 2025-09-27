@@ -13,13 +13,13 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 export default function App() {
     const [movies, setMovies] = useState<Movie[]>([])
     const [isLoader, setIsLoader] = useState(false)
-    const [isError, setIsErros] = useState(false)
-    const [isOpenModal, setIsOpenModal] = useState(false)
+    const [isError, setIsError] = useState(false)
     const [movieForModal, setMovieForModal] = useState<Movie | null>(null)
 
 
     const handleSearch = async (query: string) => {
         try {
+            setIsError(false)
             setMovies([])
             setIsLoader(true)
             const results = await fetchMovie(query)
@@ -31,7 +31,7 @@ export default function App() {
 
         }
         catch {
-            setIsErros(true)
+            setIsError(true)
         }
         finally {
             setIsLoader(false)
@@ -39,11 +39,10 @@ export default function App() {
     }
 
     const handleModal = (movie: Movie) => {
-        setIsOpenModal(true)
         setMovieForModal(movie)
     }
     const closeModal = () => {
-        setIsOpenModal(false)
+        setMovieForModal(null)
     }
 
     useEffect(() => {
@@ -57,7 +56,7 @@ export default function App() {
             {isError === true && <ErrorMessage />}
             <Toaster />
             <MovieGrid onSelect={handleModal} movies={movies} />
-            {isOpenModal && movieForModal && (
+            {movieForModal && (
                 <MovieModal movie={movieForModal} onClose={closeModal} />
             )}
         </>
