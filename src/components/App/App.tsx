@@ -14,9 +14,13 @@ export default function App() {
     const [movies, setMovies] = useState<Movie[]>([])
     const [isLoader, setIsLoader] = useState(false)
     const [isError, setIsErros] = useState(false)
+    const [isOpenModal, setIsOpenModal] = useState(false)
+    const [movieForModal, setMovieForModal] = useState<Movie | null>(null)
+
 
     const handleSearch = async (query: string) => {
         try {
+            setMovies([])
             setIsLoader(true)
             const results = await fetchMovie(query)
             if (results.results.length === 0) {
@@ -34,12 +38,14 @@ export default function App() {
         }
     }
 
-
-    const handleModal = () => {
-        return (
-            <MovieModal />
-        )
+    const handleModal = (movie: Movie) => {
+        setIsOpenModal(true)
+        setMovieForModal(movie)
     }
+    const closeModal = () => {
+        setIsOpenModal(false)
+    }
+
     useEffect(() => {
         console.log(movies)
     }, [movies])
@@ -51,6 +57,9 @@ export default function App() {
             {isError === true && <ErrorMessage />}
             <Toaster />
             <MovieGrid onSelect={handleModal} movies={movies} />
+            {isOpenModal && movieForModal && (
+                <MovieModal movie={movieForModal} onClose={closeModal} />
+            )}
         </>
     )
 
